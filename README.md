@@ -9,7 +9,7 @@ A lightweight, reproducible **Retrieval-Augmented Generation (RAG) agent** built
 - Use **DuckDB** as a single-file, portable backend for logging, metadata, and (eventually) vector storage.
 - Emphasize **provenance, source citation, and structured logging** from day one.
 - Keep the entire stack **Dockerized** for reproducibility and easy deployment.
-- Showcase **professional data engineering practices**: clean architecture, intentional schema design, error handling, and analytics on usage.
+- Showcase: clean architecture, intentional schema design, error handling, and analytics on usage.
 
 ---
 
@@ -86,6 +86,14 @@ A lightweight, reproducible **Retrieval-Augmented Generation (RAG) agent** built
 - **Modular, replaceable core** — dummy → LLM → RAG → server without breaking prior versions.
 - Fully **Dockerized** for instant reproducibility.
 - CI/CD-ready structure for future GitHub Actions.
+
+## Data Sources
+
+### Text Corpus (v0.3 RAG Retrieval)
+- **TMDB Movies Dataset 2024** (1M+ films, up to 2025 releases)  
+  Link: https://www.kaggle.com/datasets/asaniczka/tmdb-movies-dataset-2023-930k-movies  
+  License: ODC-BY 1.0 (attribution provided)  
+  Used: "overview" column for plot summaries
 
 ---
 
