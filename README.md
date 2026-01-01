@@ -127,7 +127,8 @@ python agent.py query "What is RAG?"
 python agent.py stats
 
 # Show version
-python agent.py --version```
+python agent.py --version
+```
 
 <!--
 ## Docker instructions
