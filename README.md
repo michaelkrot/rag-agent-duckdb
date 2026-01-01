@@ -1,6 +1,6 @@
 # RAG Agent with DuckDB & Open-Source LLMs
 
-A lightweight, reproducible **Retrieval-Augmented Generation (RAG) agent** built as a **data engineering portfolio project**.
+A lightweight, reproducible **Retrieval-Augmented Generation (RAG) agent** built as a demonstration of basic RAG and agent concepts in a portfolio project.  
 
 ---
 
@@ -8,7 +8,6 @@ A lightweight, reproducible **Retrieval-Augmented Generation (RAG) agent** built
 - Demonstrate an end-to-end RAG pipeline, starting with text and evolving toward quantitative reasoning.
 - Use **DuckDB** as a single-file, portable backend for logging, metadata, and (eventually) vector storage.
 - Emphasize **provenance, source citation, and structured logging** from day one.
-- Keep the entire stack **Dockerized** for reproducibility and easy deployment.
 - Showcase: clean architecture, intentional schema design, error handling, and analytics on usage.
 
 ---
@@ -24,6 +23,20 @@ A lightweight, reproducible **Retrieval-Augmented Generation (RAG) agent** built
 
 > This milestone validates the **full agent architecture**: interface → core logic → persistence → provenance → response flow.
 
+
+## v0.3 — Text RAG Complete ✅
+
+- Changed plans and skipped 0.2 temporarily (will return)
+- Real vector retrieval over TMDB movie overviews (2015–2025)
+- HNSW index for fast cosine similarity search
+- Provenance-aware responses with movie title/year citation
+- Embedding model loaded once for performance
+- Small Pytest suite validating schema, retrieval, and core logic
+
+Run:
+```bash
+python agent.py repl
+# Ask: "What is Dune about?" or "Movies like Inception"```
 ---
 
 ## **Roadmap**
@@ -35,14 +48,6 @@ A lightweight, reproducible **Retrieval-Augmented Generation (RAG) agent** built
 - Prompt engineering for coherent, concise responses.
 - Unchanged CLI/REPL and DuckDB logging.
 **Portfolio Highlight:** Hands-on local LLM integration without cloud APIs — demonstrates self-contained AI pipelines.
-
-### **v0.3 — Text RAG (Retrieval-Augmented Generation)**
-**Goal:** Ground LLM responses in a real text corpus for factual, source-backed answers.  
-**Key Features**
-- Text chunking + embeddings using `sentence-transformers/all-MiniLM-L6-v2`.
-- DuckDB native vector storage (FLOAT[384] arrays) and cosine similarity search.
-- Top-k retrieval → context-augmented prompts → source citation in responses.
-**Portfolio Highlight:** Core technical achievement — building grounded retrieval from scratch in a lightweight stack.
 
 ### **v0.4 — Standalone Agent Server**
 **Goal:** Expose the full RAG agent as a reusable service.  
@@ -97,16 +102,6 @@ A lightweight, reproducible **Retrieval-Augmented Generation (RAG) agent** built
 
 In order to run this locally, the data was filtered by date, popularity, and number of reviews to get a set of movies ~15K that could be ingested in a reasonable time (this is configurable in the code).
 
-
-
-
-
-## **Getting Started (Current: v0.1)**
-
-
-
-```bash
-
 ## Quick Start (Local)
 
 ```bash
@@ -133,10 +128,11 @@ python agent.py stats
 # Show version
 python agent.py --version```
 
+<!--
 ## Docker instructions
 
-
-### Build the docker image 
+#hiding the docker stuff for now as it's not quite there
+### Build the docker image (needs work/hasn't been updates)
 ```bash
 # Build the image
 docker build -t rag-agent .
@@ -149,4 +145,6 @@ docker run -it --rm -v $(pwd)/data:/app/data rag-agent python agent.py query "Wh
 
 # View stats
 docker run -it --rm -v $(pwd)/data:/app/data rag-agent python agent.py stats```
+
+-->
 
