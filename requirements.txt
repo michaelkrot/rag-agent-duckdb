@@ -1,5 +1,17 @@
-# Core CLI and utilities
+
+# Core/util
+numpy<2
 click>=8.3.1
 
+
+# Embeddings / ML
+torch>=2.1
+sentence-transformers>=2.2
+
 # Database and analytics
-duckdb>=1.1.0
+duckdb>=1.7.0
+
+
+
+
+
