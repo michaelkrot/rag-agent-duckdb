@@ -101,7 +101,7 @@ python agent.py repl
   License: ODC-BY 1.0 (attribution provided)  
   Used: "overview" column for plot summaries
 
-In order to run this locally, the data was filtered by date, popularity, and number of reviews to get a set of movies ~15K that could be ingested in a reasonable time (this is configurable in the code).
+In order to run this locally, the data was filtered by date, popularity, and number of reviews to get a set of movies that could be ingested in a reasonable time (this is configurable in the code).  This aspect needs some tuning.
 
 ## Quick Start (Local)
 
@@ -149,4 +149,5 @@ docker run -it --rm -v $(pwd)/data:/app/data rag-agent python agent.py query "Wh
 docker run -it --rm -v $(pwd)/data:/app/data rag-agent python agent.py stats```
 
 -->
+
 
