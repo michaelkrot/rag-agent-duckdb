@@ -36,7 +36,8 @@ A lightweight, reproducible **Retrieval-Augmented Generation (RAG) agent** built
 Run:
 ```bash
 python agent.py repl
-# Ask: "What is Dune about?" or "Movies like Inception"```
+# Ask: "What is Dune about?" or "Movies like Inception"
+```
 ---
 
 ## **Roadmap**
