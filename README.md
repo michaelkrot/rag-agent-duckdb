@@ -24,7 +24,7 @@ A lightweight, reproducible **Retrieval-Augmented Generation (RAG) agent** built
 > This milestone validates the **full agent architecture**: interface → core logic → persistence → provenance → response flow.
 
 
-## v0.3 — Text RAG Complete ✅
+**v0.3 — Text RAG Complete** ✅
 
 - Changed plans and skipped 0.2 temporarily (will return)
 - Real vector retrieval over TMDB movie overviews (2015–2025)
