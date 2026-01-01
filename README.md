@@ -95,7 +95,11 @@ A lightweight, reproducible **Retrieval-Augmented Generation (RAG) agent** built
   License: ODC-BY 1.0 (attribution provided)  
   Used: "overview" column for plot summaries
 
----
+In order to run this locally, the data was filtered by date, popularity, and number of reviews to get a set of movies ~15K that could be ingested in a reasonable time (this is configurable in the code).
+
+
+
+
 
 ## **Getting Started (Current: v0.1)**
 
@@ -112,6 +116,10 @@ cd rag-agent-duckdb
 
 # Install dependencies
 pip install -r requirements.txt
+
+#The agent requires a pre-built vector index of movie overviews.
+#Run once (or when updating data):
+python build_corpus.py
 
 # Interactive REPL (recommended for demo)
 python agent.py repl
@@ -133,7 +141,7 @@ python agent.py --version```
 # Build the image
 docker build -t rag-agent .
 
-# Interactive REPL (default – great for demos)
+# Interactive REPL 
 docker run -it --rm -v $(pwd)/data:/app/data rag-agent
 
 # Single query

@@ -2,14 +2,15 @@
 # Core/util
 numpy<2
 click>=8.3.1
-
+pytest>=7.4.0
+pyparsing>=3.0.9
 
 # Embeddings / ML
 torch>=2.1
 sentence-transformers>=2.2
 
 # Database and analytics
-duckdb>=1.7.0
+duckdb>=1.4.0
 
 
 

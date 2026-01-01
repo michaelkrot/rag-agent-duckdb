@@ -17,70 +17,16 @@ Future evolution:
 """
 
 import click
-import duckdb
 import json
-from pathlib import Path
+
 from datetime import datetime, timezone 
 
-# ---------- CONFIG ----------
+from src.rag_agent.db import get_db_connection
 
-DATA_DIR = Path("data")
-DB_PATH = DATA_DIR / "agent.duckdb"
-DATA_DIR.mkdir(parents=True, exist_ok=True)
+conn = get_db_connection()
 
 
-# ---------- DB SETUP ----------
-def get_db_connection():
-    """Return a DuckDB connection (single-file, portable)."""
-    return duckdb.connect(str(DB_PATH))
 
-def init_db(conn):
-    """Initialize tables and seed dummy knowledge base if empty."""
-    conn.execute("""
-        CREATE TABLE IF NOT EXISTS query_log (
-        /*had an id here but duckdb doesn't auto generate, no primary key necessary at this time or can be added later*/         
-        timestamp TIMESTAMP,
-        query TEXT,
-        response TEXT,
-        sources JSON
-        );
-    """)
-
-    conn.execute("""
-        CREATE TABLE IF NOT EXISTS dummy_knowledge (
-            key TEXT PRIMARY KEY,
-            value TEXT,
-            /* we want to know the provenance of each knowledge item */
-            sources JSON
-        );
-    """)
-
-    # Seed only once
-    if conn.execute("SELECT COUNT(*) FROM dummy_knowledge").fetchone()[0] == 0:
-        seed_data = [
-            (
-                "what is this project",
-                "This is a Step 0 dummy RAG agent used to validate the full agent architecture for a data engineering portfolio project.",
-                json.dumps(["README.md"]),
-            ),
-            (
-                "what database are you using",
-                "This agent uses DuckDB for local persistence, logging, and future vector storage.",
-                json.dumps(["architecture_decisions.md"]),
-            ),
-            (
-                "what is rag",
-                "RAG stands for Retrieval-Augmented Generation – combining retrieval of relevant context with generative LLMs.",
-                json.dumps(["rag_concepts.md"]),
-            ),
-        ]
-        conn.executemany(
-            """
-            INSERT INTO dummy_knowledge (key, value, sources)
-            VALUES (?, ?, ?)
-            """,
-            seed_data,
-        )
 # ---------- AGENT CORE ----------
 
 def get_response(conn, query: str):
@@ -146,7 +92,6 @@ def cli():
 def query(query: str):
     """Ask the agent a single question."""
     conn = get_db_connection()
-    init_db(conn)
 
     response, sources_json = get_response(conn, query)
     log_interaction(conn, query, response, sources_json)
@@ -165,20 +110,19 @@ def query(query: str):
 def repl():
     """Start an interactive agent session."""
     conn = get_db_connection()
-    init_db(conn)
 
     click.echo("🤖 Dummy RAG Agent – Interactive Mode")
     click.echo("Type 'exit' or 'quit' to end the session.\n")
 
     while True:
         try:
-            user_input = click.prompt("Just ask:", type=str)
+            user_input = click.prompt("Ask me about movies (2015-2024)", type=str)
         except (EOFError, KeyboardInterrupt):
-            click.echo("\nGoodbye 👋")
+            click.echo("\nGoodbye")
             break
 
         if user_input.lower().strip() in {"exit", "quit"}:
-            click.echo("Goodbye 👋")
+            click.echo("Goodbye")
             break
 
         try:
