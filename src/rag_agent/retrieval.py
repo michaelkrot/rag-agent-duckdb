@@ -1,6 +1,6 @@
 from sentence_transformers import SentenceTransformer
 from .db import get_db_connection
-from .config import MODEL_NAME
+from .config import MODEL_NAME, TOP_K_RETRIEVAL
 
 
 
@@ -14,7 +14,7 @@ def get_embedding_model() -> SentenceTransformer:
         _model_instance = SentenceTransformer(MODEL_NAME)
     return _model_instance
 
-def retrieve_top_k(query: str, k: int = 5) -> list[dict]:
+def retrieve_top_k(query: str, k: int = TOP_K_RETRIEVAL) -> list[dict]:
     """
     Retrieve top-k most similar movie chunks for a query.
     Returns list of dicts with chunk details.

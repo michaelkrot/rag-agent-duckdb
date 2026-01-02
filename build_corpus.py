@@ -22,7 +22,8 @@ from src.rag_agent.config import (
     MIN_OVERVIEW_LEN,
     MIN_POPULARITY,
     MIN_VOTE_COUNT,
-    RAW_TMDB_DATA
+    RAW_TMDB_DATA,
+    EMBEDDING_DIM
 )
 
 def seed_raw_tmdb_data():
@@ -34,6 +35,7 @@ def build_movie_corpus():
     conn = get_db_connection()
 
     # Create table
+    #The EMBEDDING_DIM is ugly but DuckDB isn't handling it as a parameter and I don't have time to debug
     conn.execute("""
         CREATE TABLE IF NOT EXISTS text_chunks (
             chunk_id INTEGER PRIMARY KEY,
@@ -42,7 +44,7 @@ def build_movie_corpus():
             release_year INTEGER,
             genres VARCHAR,
             chunk_text VARCHAR,
-            embedding FLOAT[384],
+            embedding FLOAT[""" + str(EMBEDDING_DIM) + """],
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         );
     """)
