@@ -16,7 +16,6 @@ from src.rag_agent.agent_core import get_grounded_response
 
 # ---------- LOGGING ----------
 def log_interaction(conn, query: str, response: str, sources: list):
-    """Persist interaction with provenance."""
     conn.execute(
         """
         INSERT INTO query_log (timestamp, query, response, sources)
@@ -39,19 +38,15 @@ def cli():
 def query(query: str):
     """Ask a single question about movies."""
     conn = get_db_connection()
-
     response, sources = get_grounded_response(query)
-
     log_interaction(conn, query, response, sources)
 
     click.echo("\n=== AGENT RESPONSE ===\n")
     click.echo(response)
-
     if sources:
         click.echo("\nSources:")
         for src in sources:
             click.echo(f"  • {src}")
-
     click.echo("\n======================\n")
 
 
@@ -60,9 +55,15 @@ def repl():
     """Start an interactive session."""
     conn = get_db_connection()
 
-    click.echo("🎬 Movie RAG Agent – v0.3")
-    click.echo("Ask about movies (2015–2025). Type 'exit' or 'quit' to end.\n")
-
+    click.echo("🎬 Movie RAG Agent – v0.3 (Text Retrieval)")
+    click.echo("This agent searches movie plot overviews from TMDB (2015–2025).")
+    click.echo("Best for questions like:")
+    click.echo("  • 'What is Dune about?'")
+    click.echo("  • 'Movies with time travel'")
+    click.echo("  • 'Superhero films with mind-bending plots'")
+    click.echo("It does NOT yet answer questions about box office, ratings, popularity, or awards.")
+    click.echo("Type 'exit' or 'quit' to end.\n")
+    
     while True:
         try:
             user_input = click.prompt("You", type=str)
@@ -74,12 +75,11 @@ def repl():
             click.echo("Goodbye 👋")
             break
 
+        click.echo(f"You: {user_input}")
         try:
             response, sources = get_grounded_response(user_input)
             log_interaction(conn, user_input, response, sources)
-
-            click.echo(f"\nAgent: {response}")
-
+            click.echo(f"Agent: {response}")
             if sources:
                 click.echo("Sources:")
                 for src in sources:
@@ -94,10 +94,8 @@ def repl():
 def stats():
     """Show usage statistics."""
     conn = get_db_connection()
-
     total = conn.execute("SELECT COUNT(*) FROM query_log").fetchone()[0]
     last_ts = conn.execute("SELECT MAX(timestamp) FROM query_log").fetchone()[0]
-
     top_queries = conn.execute("""
         SELECT query, COUNT(*) AS cnt
         FROM query_log
@@ -108,16 +106,11 @@ def stats():
 
     click.echo("\n📊 Agent Stats")
     click.echo(f"Total queries: {total}")
-    if last_ts:
-        click.echo(f"Last query: {last_ts}\n")
-    else:
-        click.echo("Last query: None\n")
-
+    click.echo(f"Last query: {last_ts or 'None'}\n")
     click.echo("Top queries:")
-    if top_queries:
-        for q, cnt in top_queries:
-            click.echo(f"  • {q} ({cnt})")
-    else:
+    for q, cnt in top_queries or []:
+        click.echo(f"  • {q} ({cnt})")
+    if not top_queries:
         click.echo("  • No queries yet")
     click.echo()
 
