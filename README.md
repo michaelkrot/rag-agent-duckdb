@@ -32,6 +32,7 @@ A lightweight, reproducible **Retrieval-Augmented Generation (RAG) agent** built
 - Provenance-aware responses with movie title/year citation
 - Embedding model loaded once for performance
 - Small Pytest suite validating schema, retrieval, and core logic
+- Added popularity/vote count to embedding table (for ranking, though it's used in a very limited fashion at the moment)
 
 Run:
 ```bash
