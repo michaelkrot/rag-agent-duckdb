@@ -27,7 +27,10 @@ def retrieve_top_k(query: str, k: int = TOP_K_RETRIEVAL) -> list[dict]:
 
 
     # Cosine similarity search using HNSW index,
-    #doing some very simple ranking based on popularity and vote count (as tie breakers)
+    # Two-stage retrieval:
+    # 1) Vector recall by semantic similarity
+    # 2) Lightweight reranking using popularity + vote_count as tie breakers
+
     results = conn.execute("""
         WITH candidates AS (
             SELECT 
