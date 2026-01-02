@@ -12,7 +12,7 @@ def get_grounded_response(query: str, k: int = 5) -> tuple[str, list[str]]:
         sources = []
     else:
         # Concatenate chunk texts (simple for v0.3)
-        context = "\n\n".join([chunk["chunk_text"] for chunk in chunks])
+        context = "\n\n".join([chunk["overview"] for chunk in chunks])
         response = f"Relevant movie overviews:\n\n{context}"
 
         # Provenance sources

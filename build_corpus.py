@@ -43,7 +43,9 @@ def build_movie_corpus():
             title VARCHAR,
             release_year INTEGER,
             genres VARCHAR,
-            chunk_text VARCHAR,
+            overview VARCHAR,
+            popularity DOUBLE,
+            vote_count INTEGER,
             embedding FLOAT[""" + str(EMBEDDING_DIM) + """],
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         );
@@ -57,7 +59,9 @@ def build_movie_corpus():
             title,
             EXTRACT(YEAR FROM CAST(release_date AS DATE)) AS release_year,
             genres,
-            overview
+            overview,
+            popularity,
+            vote_count,
         FROM raw_tmdb_data
         WHERE overview IS NOT NULL
           AND LENGTH(overview) >= ?
@@ -86,26 +90,30 @@ def build_movie_corpus():
 
     print("Embedding and inserting...")
     for row in tqdm(rows, desc="Processing movies"):
-        movie_id, title, year, genres, overview = row
-        batch.append((movie_id, title, year, genres, overview))
+        movie_id, title, year, genres, overview, popularity, vote_count = row
+        batch.append(row)  # store the full 7-tuple
 
         if len(batch) >= BATCH_SIZE:
-            texts = [item[4] for item in batch]
+            # Only embed the overview text
+            texts = [item[4] for item in batch]  # overview is index 4 - don't want to index poularity or vote count (using them later for ranking)
             embeddings = model.encode(texts, show_progress_bar=False, normalize_embeddings=True)
 
             for i, emb in enumerate(embeddings):
+                row = batch[i]
                 conn.execute(
                     """
                     INSERT INTO text_chunks
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                     """,
                     (
                         chunk_id,
-                        batch[i][0],
-                        batch[i][1],
-                        batch[i][2],
-                        batch[i][3],
-                        batch[i][4],
+                        row[0],  # movie_id
+                        row[1],  # title
+                        row[2],  # release_year
+                        row[3],  # genres
+                        row[4],  # overview
+                        row[5],  # popularity
+                        row[6],  # vote_count
                         emb.tolist(),
                         datetime.now(timezone.utc),
                     ),
@@ -115,23 +123,26 @@ def build_movie_corpus():
 
             batch.clear()
 
-    # Final batch
+    # Final batch — same logic
     if batch:
         texts = [item[4] for item in batch]
         embeddings = model.encode(texts, show_progress_bar=False, normalize_embeddings=True)
         for i, emb in enumerate(embeddings):
+            row = batch[i]
             conn.execute(
                 """
                 INSERT INTO text_chunks
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """,
                 (
                     chunk_id,
-                    batch[i][0],
-                    batch[i][1],
-                    batch[i][2],
-                    batch[i][3],
-                    batch[i][4],
+                    row[0],
+                    row[1],
+                    row[2],
+                    row[3],
+                    row[4],
+                    row[5],
+                    row[6],
                     emb.tolist(),
                     datetime.now(timezone.utc),
                 ),

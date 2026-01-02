@@ -1,6 +1,6 @@
 from sentence_transformers import SentenceTransformer
 from .db import get_db_connection
-from .config import MODEL_NAME, TOP_K_RETRIEVAL
+from .config import MODEL_NAME, TOP_K_RETRIEVAL, TOP_K_RETURNED
 
 
 
@@ -26,20 +26,37 @@ def retrieve_top_k(query: str, k: int = TOP_K_RETRIEVAL) -> list[dict]:
 
 
 
-    # Cosine similarity search using HNSW index
+    # Cosine similarity search using HNSW index,
+    #doing some very simple ranking based on popularity and vote count (as tie breakers)
     results = conn.execute("""
+        WITH candidates AS (
+            SELECT 
+                movie_id,
+                title,
+                release_year,
+                genres,
+                overview,
+                popularity,
+                vote_count,
+                embedding <=> ? AS distance
+            FROM text_chunks
+            ORDER BY distance
+            LIMIT ?
+        )
         SELECT 
             movie_id,
             title,
             release_year,
             genres,
-            chunk_text,
-            embedding <=> ? AS distance
-        FROM text_chunks
-        ORDER BY distance
+            overview,
+            distance
+        FROM candidates
+        ORDER BY 
+            distance ASC,           -- still respect similarity first
+            popularity DESC,       -- then boost popular ones
+            vote_count DESC
         LIMIT ?
-    """, [query_embedding.tolist(), k]).fetchall()
-
+    """, [query_embedding.tolist(), TOP_K_RETRIEVAL, TOP_K_RETURNED]).fetchall()
     # Format results
     chunks = []
     for row in results:
@@ -49,7 +66,7 @@ def retrieve_top_k(query: str, k: int = TOP_K_RETRIEVAL) -> list[dict]:
             "title": title,
             "release_year": year,
             "genres": genres,
-            "chunk_text": text,
+            "overview": text,
             "distance": distance,
         })
 

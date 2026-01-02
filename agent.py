@@ -63,10 +63,10 @@ def repl():
     click.echo("  • 'Superhero films with mind-bending plots'")
     click.echo("It does NOT yet answer questions about box office, ratings, popularity, or awards.")
     click.echo("Type 'exit' or 'quit' to end.\n")
-    
+
     while True:
         try:
-            user_input = click.prompt("You", type=str)
+            user_input = click.prompt("Ask me", type=str)
         except (EOFError, KeyboardInterrupt):
             click.echo("\nGoodbye 👋")
             break
@@ -75,7 +75,6 @@ def repl():
             click.echo("Goodbye 👋")
             break
 
-        click.echo(f"You: {user_input}")
         try:
             response, sources = get_grounded_response(user_input)
             log_interaction(conn, user_input, response, sources)

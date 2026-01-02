@@ -8,5 +8,5 @@ def test_retrieve_top_k_returns_results():
 def test_retrieval_result_shape():
     result = retrieve_top_k("romantic comedy", k=1)[0]
 
-    for key in ["movie_id", "title", "release_year", "chunk_text", "distance"]:
+    for key in ["movie_id", "title", "release_year", "overview", "distance"]:
         assert key in result
