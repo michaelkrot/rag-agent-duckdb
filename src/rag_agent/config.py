@@ -13,5 +13,10 @@ EMBEDDING_DIM = 384  # all-MiniLM-L6-v2
 MIN_OVERVIEW_LEN = 40       # discard ultra-short plots
 MIN_POPULARITY = 1          # remove obscure / low-signal entries
 MIN_VOTE_COUNT = 10         # ensure minimal audience validation
-TOP_K_RETRIEVAL = 50         # number of chunks to retrieve per query
-TOP_K_RETURNED = 5            # number of chunks to return per query
+TOP_K_RETRIEVAL = 150         # number of chunks to retrieve per query
+TOP_K_RETURNED = 10            # number of results to return by default
+# Current: fixed hybrid ranking
+# Future: adaptive adjustment of retrieval depth or ranking weights
+# informed by query-level relevance signals and historical performance
+
+USE_LLM = False  # v0.4 synthesis flag

@@ -1,16 +1,19 @@
 # RAG Agent with DuckDB & Open-Source LLMs
 
-A lightweight, reproducible **Retrieval-Augmented Generation (RAG) agent** built as a demonstration of basic RAG and agent concepts in a portfolio project.  
+A lightweight, reproducible **Retrieval-Augmented Generation (RAG) agent** built as a personal learning project and portfolio demonstration.  
 
 ---
 
 ## **Project Goals**
-- Demonstrate an end-to-end RAG pipeline, starting with text and evolving toward quantitative reasoning.
-- Use **DuckDB** as a single-file, portable backend for logging, metadata, and (eventually) vector storage.
-- Emphasize **provenance, source citation, and structured logging** from day one.
-- Showcase: clean architecture, intentional schema design, error handling, and analytics on usage.
+- **Learn & Experiment:** Primarily a hands-on learning exercise to deepen understanding of RAG and embeddings
+- **Accelerate Learning with AI:** Using AI tools to streamline development and experimentation, allowing focus on system design, problem solving, and domain exploration.  
+- **End-to-End RAG Pipeline:** Demonstrate a complete workflow from raw text to semantic retrieval, and eventually toward quantitative reasoning capabilities.  
+- **Portable, Reliable Storage:** Leverage **DuckDB** for a single-file, reproducible backend supporting metadata, logging, and vector storage.  
+- **Provenance & Accountability:** Maintain clear source citations, structured logging, and traceability for all retrievals and outputs.  
+- **Showcase Best Practices:** Highlight clean architecture, intentional schema design, robust error handling, and analytics-ready structures.
 
 ---
+
 
 ## **Current Milestone**
 **v0.1 — Stable Dummy Agent (Complete)** ✅
