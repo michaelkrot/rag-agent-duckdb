@@ -11,7 +11,7 @@ EMBEDDING_DIM = 384  # all-MiniLM-L6-v2
 
 # --- RAG corpus filtering ---
 MIN_OVERVIEW_LEN = 40       # discard ultra-short plots
-MIN_POPULARITY = 1          # remove obscure / low-signal entries
+MIN_POPULARITY = 2          # remove obscure / low-signal entries
 MIN_VOTE_COUNT = 10         # ensure minimal audience validation
 TOP_K_RETRIEVAL = 150         # number of chunks to retrieve per query
 TOP_K_RETURNED = 10            # number of results to return by default

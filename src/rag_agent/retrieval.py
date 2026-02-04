@@ -42,15 +42,17 @@ def retrieve_top_k(query: str, top_k_returned: int = TOP_K_RETURNED) -> list[dic
     for row in results:
         movie_id, title, year, genres, overview, movie_cast, popularity, vote_count, distance = row
 
+        # --- Title boost ---
         title_boost = 0.0
         if title:
             title_tokens = set(title.lower().split())
             query_tokens = set(query_lower.split())
             overlap = title_tokens & query_tokens
             if overlap:
-                # Boost proportional to fraction of title words matched (or cap it)
-                title_boost = min(0.2, 0.05 * len(overlap))  # max boost 0.2
+                # Increase max title boost from 0.2 → 0.5
+                title_boost = min(0.5, 0.1 * len(overlap))  # 0.1 per overlapping token
 
+        # --- Cast boost ---
         cast_boost = 0.0
         if movie_cast:
             query_tokens = set(query_lower.split())
@@ -59,18 +61,18 @@ def retrieve_top_k(query: str, top_k_returned: int = TOP_K_RETURNED) -> list[dic
                 if not actor:
                     continue
                 actor_tokens = set(actor.split())
-                # Boost if any actor token appears in query
                 if actor_tokens & query_tokens:
-                    cast_boost = 0.1
+                    cast_boost = 0.15  # slightly higher base for token match
                     break
-                # Stronger boost if full actor name matches query substring
                 if actor in query_lower or query_lower in actor:
-                    cast_boost = 0.15  # slightly higher for full match
+                    cast_boost = 0.2  # stronger boost for full match
                     break
 
-        popularity_boost = 0.00001 * (popularity or 0)
+        # --- Popularity boost ---
+        # Increase from 0.00001 → 0.00005 to make popularity more noticeable
+        popularity_boost = 0.00005 * (popularity or 0)
 
-        # Combined score
+        # --- Combined score ---
         score = -distance + title_boost + cast_boost + popularity_boost
 
         scored.append({
@@ -81,11 +83,16 @@ def retrieve_top_k(query: str, top_k_returned: int = TOP_K_RETURNED) -> list[dic
             "overview": overview,
             "movie_cast": movie_cast,
             "distance": distance,
-            "score": score
+            "score": score,
+            "title_boost": title_boost,
+            "cast_boost": cast_boost,
+            "popularity_boost": popularity_boost
         })
 
+    # Sort by final score
     scored.sort(key=lambda x: x["score"], reverse=True)
     return scored[:top_k_returned]
+
 
 
 

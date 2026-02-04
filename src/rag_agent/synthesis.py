@@ -1,60 +1,73 @@
-# src/rag_agent/synthesis.py
-
 from typing import List, Dict
+from transformers import pipeline
+import atexit
+
+LLM_MODEL_NAME = "google/flan-t5-large"
+
+# Initialize once (still OK for v0.4)
+llm = pipeline(
+    "text2text-generation",
+    model=LLM_MODEL_NAME,
+    device=0,        # use -1 for CPU
+)
+
+
+@atexit.register
+def cleanup_pipeline():
+    global llm
+    if llm is not None:
+        del llm
 
 def build_prompt(query: str, contexts: List[Dict]) -> str:
     """
-    Deterministically assemble a prompt with explicit citation markers.
+    Assemble a concise prompt emphasizing cast and year accuracy.
 
-    Each context is numbered [S1], [S2], etc.
+    Truncates overviews to 300 chars, includes cast and year explicitly,
+    and keeps instructions lightweight for faster LLM response.
     """
     lines = [
-        "You are answering a question using only the sources below.",
+        "Answer the question using ONLY the sources below.",
+        "Be precise with actor names and release years.",
         "Cite sources using [S1], [S2], etc.\n",
         f"Question:\n{query}\n",
         "Sources:"
     ]
 
     for i, ctx in enumerate(contexts, start=1):
+        # Truncate overview to first 300 characters
+        overview_snippet = ctx.get('overview', '')
+        if len(overview_snippet) > 300:
+            overview_snippet = overview_snippet[:300].rstrip() + "..."
+
         lines.append(
-            f"[S{i}] {ctx['title']} ({ctx.get('release_year', 'Unknown')})\n"
-            f"{ctx['overview']}"
+            f"[S{i}] {ctx.get('title', 'Unknown')} ({ctx.get('release_year', 'Unknown')}): "
+            f"{overview_snippet} Cast: {ctx.get('movie_cast', 'Unknown')}"
         )
 
     lines.append("\nAnswer:")
-    return "\n\n".join(lines)
+    return "\n".join(lines)
+
 
 
 def synthesize_answer(
     query: str,
     contexts: List[Dict],
     *,
-    max_tokens: int = 512
+    max_tokens: int = 256
 ) -> Dict:
-    """
-    Stub v0.4 synthesis: generates a structured answer using retrieved contexts.
+    if not contexts:
+        return {"answer": "No relevant sources found.", "citations": []}
 
-    Returns:
-        {
-            "answer": str,
-            "citations": List[Dict]
-        }
-
-    Notes:
-    - Deterministic placeholder until local LLM is added.
-    - Citations are numbered and include score/year for provenance.
-    """
-    # Build prompt (not sent to any model yet)
     prompt = build_prompt(query, contexts)
 
-    # Stub answer text
-    answer = (
-        "This answer will be synthesized by a local LLM in v0.4.\n\n"
-        "Relevant movies include:\n"
-        + ", ".join(ctx["title"] for ctx in contexts)
+    response = llm(
+        prompt,
+        max_new_tokens=max_tokens,
+        do_sample=False
     )
 
-    # Build citations list
+    answer_text = response[0]["generated_text"].strip()
+
     citations = [
         {
             "index": i,
@@ -66,9 +79,11 @@ def synthesize_answer(
     ]
 
     return {
-        "answer": answer,
+        "answer": answer_text,
         "citations": citations,
     }
+
+
 
 
 

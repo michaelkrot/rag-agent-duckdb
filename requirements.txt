@@ -8,9 +8,12 @@ pyparsing>=3.0.9
 # Embeddings / ML
 torch>=2.1
 sentence-transformers>=2.2
+transformers>=4.40.0
+accelerate>=0.22.0
 
 # Database and analytics
 duckdb>=1.4.0
+
 
 
 

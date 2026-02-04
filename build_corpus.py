@@ -47,7 +47,8 @@ def embed_movie_batch(batch: list[tuple], model: SentenceTransformer) -> list[li
         movie_cast_str = " ".join([a.strip() for a in (row[5] or "").split(",")])
         release_year = row[2] or ""
         genres = row[3] or ""
-        text_to_embed = f"{movie_overview} {movie_title} {movie_title} {movie_cast_str} {movie_cast_str} {release_year} {genres}"
+        #duplicating title and cast to increase their weight in embedding
+        text_to_embed = f"{movie_overview} {movie_title} {movie_title} {movie_title} {movie_cast_str} {movie_cast_str} {release_year} {genres}"
         texts.append(text_to_embed)
     embeddings = model.encode(texts, show_progress_bar=False, normalize_embeddings=True)
     return embeddings
@@ -121,7 +122,7 @@ def build_movie_corpus():
           AND popularity >= ?
           AND vote_count >= ?
           AND release_date IS NOT NULL
-          AND CAST(release_date AS DATE) BETWEEN DATE '2015-01-01' AND DATE '2025-12-31'
+          AND CAST(release_date AS DATE) BETWEEN DATE '1990-01-01' AND DATE '2025-12-31'
         ORDER BY popularity DESC
     """, [MIN_OVERVIEW_LEN, MIN_POPULARITY, MIN_VOTE_COUNT]).fetchall()
 
